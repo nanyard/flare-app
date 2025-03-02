@@ -11,9 +11,6 @@ body, html {
     top: 0;
     left: 0;
     width: 100%;
-    background-color: white; /* Optional: Background to prevent transparency */
-    text-align: center;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Adds a slight shadow */
     z-index: 1000;
 }
 
