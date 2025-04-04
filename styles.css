@@ -2,7 +2,9 @@
 body, html {
     margin: 0;
     padding: 0;
-    overflow-x: hidden;
+    overflow-x: hidden; /* Prevents horizontal scrolling */
+    background-color: #0a0e1b; /* Dark background */
+    color: white; /* Ensures text is visible on dark background */
 }
 
 /* Fixed Header */
@@ -11,19 +13,21 @@ body, html {
     top: 0;
     left: 0;
     width: 100%;
+    background-color: #0a0e1b; /* Match background to blend */
     z-index: 1000;
 }
 
 .header img {
-    display: block;
     width: 100%;
     max-height: 100px; /* Adjust as needed */
+    display: block;
     object-fit: cover;
 }
 
 /* Scrollable Content */
 .content {
     margin-top: 100px; /* Push content below the fixed header */
+    padding-bottom: 60px; /* Space for the fixed footer */
 }
 
 .content img {
@@ -37,7 +41,7 @@ body, html {
     bottom: 0;
     left: 0;
     width: 100%;
-    background-color: white;
+    background-color: #0a0e1b; /* Match background */
     z-index: 1000;
 }
 
