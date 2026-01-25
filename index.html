@@ -77,12 +77,13 @@ fetch("Impostor.json").then(r=>r.json()).then(j=>{
 });
 
 function addPlayer(){
-  let n=document.getElementById("nameInput").value.trim();
+  const input=document.getElementById("nameInput");
+  let n=input.value.trim();
   if(!n||players.includes(n))return;
   players.push(n);scores[n]=0;impostorHistory[n]=[];
   let li=document.createElement("li");li.textContent=n;
   document.getElementById("playerList").appendChild(li);
-  nameInput.value="";
+  input.value="";
 }
 
 function addPlayerPrompt(){
@@ -99,20 +100,35 @@ function startGame(){
 }
 
 function newRound(){
-  viewed.clear();impostors=[];
+  viewed.clear();
+  impostors=[];
   let impostorCount=players.length>=7?2:1;
 
-  // --- fairness rule: max 2 impostor roles in last 4 rounds ---
-  let eligible=players.filter(p=>{
+  // ----- TIERED FAIRNESS SELECTION -----
+  let tier0=[],tier1=[],tier2=[];
+  players.forEach(p=>{
     let last4=impostorHistory[p].slice(-4);
-    return last4.filter(x=>x).length<2;
+    let count=last4.filter(x=>x).length;
+    if(count===0) tier0.push(p);
+    else if(count===1) tier1.push(p);
+    else tier2.push(p);
   });
 
-  if(eligible.length===0)eligible=[...players];
+  function pick(arr){
+    if(arr.length===0)return null;
+    let i=Math.floor(Math.random()*arr.length);
+    return arr.splice(i,1)[0];
+  }
+
+  [tier0,tier1,tier2].forEach(pool=>{
+    while(impostors.length<impostorCount && pool.length>0){
+      impostors.push(pick(pool));
+    }
+  });
 
   while(impostors.length<impostorCount){
-    let pick=eligible[Math.floor(Math.random()*eligible.length)];
-    if(!impostors.includes(pick))impostors.push(pick);
+    let r=players[Math.floor(Math.random()*players.length)];
+    if(!impostors.includes(r))impostors.push(r);
   }
 
   players.forEach(p=>{
@@ -137,7 +153,6 @@ function pickWord(){
     avail=Object.keys(obj[category]).filter(w=>!usedWords[category].has(w));
     if(avail.length===0)usedWords[category].clear();
   }while(avail.length===0);
-
   word=avail[Math.floor(Math.random()*avail.length)];
   hint=obj[category][word];
   usedWords[category].add(word);
@@ -148,12 +163,12 @@ function updateScores(){
 }
 
 function makeButtons(){
-  let d=playerButtons;d.innerHTML="";
+  playerButtons.innerHTML="";
   players.forEach(p=>{
     let b=document.createElement("button");
     b.textContent=p;b.className="player-button";
     b.onclick=()=>reveal(p,b);
-    d.appendChild(b);
+    playerButtons.appendChild(b);
   });
 }
 
