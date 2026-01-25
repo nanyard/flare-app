@@ -21,6 +21,7 @@ button,input{font-size:22px;padding:12px;margin:6px;width:90%;max-width:360px}
 
 <h1>Impostor Game</h1>
 
+<!-- SETUP -->
 <div id="setup">
   <h2>Add Players</h2>
   <input id="nameInput" placeholder="Name">
@@ -29,6 +30,7 @@ button,input{font-size:22px;padding:12px;margin:6px;width:90%;max-width:360px}
   <button onclick="startGame()">Start Game</button>
 </div>
 
+<!-- SELECT PLAYER -->
 <div id="playerSelect" class="hidden">
   <div id="scoreboard" class="scoreboard"></div>
   <h2>Select Your Name</h2>
@@ -36,6 +38,7 @@ button,input{font-size:22px;padding:12px;margin:6px;width:90%;max-width:360px}
   <button onclick="showStarter()">Continue</button>
 </div>
 
+<!-- ROLE REVEAL -->
 <div id="revealScreen" class="hidden">
   <h2 id="revealTitle"></h2>
   <div id="categoryText" class="category"></div>
@@ -45,18 +48,21 @@ button,input{font-size:22px;padding:12px;margin:6px;width:90%;max-width:360px}
   <button onclick="addPlayerPrompt()">Add Player</button>
 </div>
 
+<!-- STARTING PLAYER -->
 <div id="starterScreen" class="hidden">
   <h2>Starting Player</h2>
   <div id="starterName" style="font-size:40px"></div>
   <button onclick="startDiscussion()">Start Discussion</button>
 </div>
 
+<!-- TIMER -->
 <div id="timerScreen" class="hidden">
   <h2 id="timerTitle"></h2>
   <div id="timerDisplay" class="timer"></div>
   <button onclick="skipTimer()">Skip</button>
 </div>
 
+<!-- ROUND END -->
 <div id="roundEnd" class="hidden">
   <h2>Round Result</h2>
   <button onclick="endRound('lost')">Impostor Lost</button>
@@ -95,40 +101,19 @@ function addPlayerPrompt(){
 
 function startGame(){
   if(players.length<3){alert("Need 3 players");return;}
-  setup.classList.add("hidden");
+  document.getElementById("setup").classList.add("hidden");
   newRound();
 }
 
 function newRound(){
   viewed.clear();
   impostors=[];
-  let impostorCount=players.length>=7?2:1;
+  let impostorCount = players.length >= 7 ? 2 : 1;
 
-  // ----- TIERED FAIRNESS SELECTION -----
-  let tier0=[],tier1=[],tier2=[];
-  players.forEach(p=>{
-    let last4=impostorHistory[p].slice(-4);
-    let count=last4.filter(x=>x).length;
-    if(count===0) tier0.push(p);
-    else if(count===1) tier1.push(p);
-    else tier2.push(p);
-  });
-
-  function pick(arr){
-    if(arr.length===0)return null;
-    let i=Math.floor(Math.random()*arr.length);
-    return arr.splice(i,1)[0];
-  }
-
-  [tier0,tier1,tier2].forEach(pool=>{
-    while(impostors.length<impostorCount && pool.length>0){
-      impostors.push(pick(pool));
-    }
-  });
-
-  while(impostors.length<impostorCount){
-    let r=players[Math.floor(Math.random()*players.length)];
-    if(!impostors.includes(r))impostors.push(r);
+  let pool=[...players];
+  while(impostors.length < impostorCount){
+    let i=Math.floor(Math.random()*pool.length);
+    impostors.push(pool.splice(i,1)[0]);
   }
 
   players.forEach(p=>{
@@ -142,7 +127,8 @@ function newRound(){
   pickWord();
   updateScores();
   makeButtons();
-  playerSelect.classList.remove("hidden");
+  document.getElementById("roundEnd").classList.add("hidden");
+  document.getElementById("playerSelect").classList.remove("hidden");
 }
 
 function pickWord(){
@@ -163,12 +149,13 @@ function updateScores(){
 }
 
 function makeButtons(){
-  playerButtons.innerHTML="";
+  let d=document.getElementById("playerButtons");
+  d.innerHTML="";
   players.forEach(p=>{
     let b=document.createElement("button");
     b.textContent=p;b.className="player-button";
     b.onclick=()=>reveal(p,b);
-    playerButtons.appendChild(b);
+    d.appendChild(b);
   });
 }
 
